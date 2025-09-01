@@ -1,8 +1,36 @@
 services:
   app:
     build: .
+    env_file:
+      - .env
+    command: bash -c "uvicorn free_port_generator:app --host 0.0.0.0 --port ${FREE_PORT_GENERATOR_PORT}"
+    ports: 
+      - ${FREE_PORT_GENERATOR_PORT}:${FREE_PORT_GENERATOR_PORT}
+
+  3x-ui:
+    image: ghcr.io/mhsanaei/3x-ui:latest
+    container_name: 3x-ui
+    ports:
+      - ${PANEL_PORT}:2053
     volumes:
-      - .:/app
-    network_mode: host
+      - ./x-ui/db/:/etc/x-ui/
+      - ./x-ui/cert/:/root/cert/
+      - ./x-ui/logs/:/var/log/
     environment:
-      - PORT=9101
+      XRAY_VMESS_AEAD_FORCED: "false"
+      X_UI_ENABLE_FAIL2BAN: "true"
+    tty: true
+    restart: unless-stopped
+    profiles:
+      - with_3x_ui
+
+  creds_changer:
+    build: .
+    env_file:
+      - .env
+    command: python creds_changer.py
+    profiles:
+      - with_3x_ui
+    depends_on:
+      3x-ui:
+        condition: service_started

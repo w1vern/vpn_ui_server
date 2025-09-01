@@ -1,16 +1,26 @@
-[tool.poetry]
-name = "free-port-generator"
+[project]
+name = "vpn_ui_server"
 version = "0.1.0"
-description = ""
-authors = ["w1vern <bndvvl@gmail.com>"]
-readme = "README.md"
+requires-python = ">=3.13"
+authors = [{ name = "w1vern", email = "bndvvl@gmail.com" }]
+license = "MIT"
 
-[tool.poetry.dependencies]
-python = "^3.12"
-fastapi = "^0.115.5"
-uvicorn = "^0.32.1"
+dependencies = [
+    "dotenv>=0.9.9",
+    "fastapi>=0.116.1",
+    "httpx>=0.28.1",
+    "pydantic>=2.11.7",
+    "uvicorn>=0.35.0",
+]
 
+[dependency-groups]
+dev = ["cli-tools", "isort>=6.0.1"]
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.uv.sources]
+cli-tools = { git = "https://github.com/w1vern/cli_tools" }
+
+[tool.isort]
+profile = "black"
+line_length = 70
+multi_line_output = 3
+include_trailing_comma = false
