@@ -17,11 +17,15 @@ class LoginPayload(BaseModel):
     password: str
 
 
-app = FastAPI(docs_url="/api/docs", redoc_url="/api/redoc",
-              openapi_url="/api/openapi.json")
+app = FastAPI(docs_url="/docs",
+              redoc_url="/api/redoc",
+              openapi_url="/api/openapi.json",
+              swagger_ui_parameters={
+                  "tryItOutEnabled": True,
+              })
 
 
-@app.get("/")
+@app.post("/")
 async def get_free_port(login_payload: LoginPayload) -> int:
     if login_payload.username != LOGIN or login_payload.password != PASSWORD:
         raise HTTPException(status_code=401, detail="Invalid credentials")
