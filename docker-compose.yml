@@ -1,17 +1,28 @@
 services:
-  app:
+  port_generator:
     build: .
     env_file:
       - .env
     command: bash -c "uvicorn free_port_generator:app --host 0.0.0.0 --port ${FREE_PORT_GENERATOR_PORT}"
-    ports: 
+    ports:
       - ${FREE_PORT_GENERATOR_PORT}:${FREE_PORT_GENERATOR_PORT}
+
+  panel_setup:
+    build: .
+    env_file:
+      - .env
+    command: python panel_setup.py
+    profiles:
+      - with_panel_setup
+    depends_on:
+      3x-ui:
+        condition: service_started
 
   3x-ui:
     image: ghcr.io/mhsanaei/3x-ui:latest
     container_name: 3x-ui
     ports:
-      - ${PANEL_PORT}:2053
+      - ${PANEL_PORT}:${PANEL_PORT}
     volumes:
       - ./x-ui/db/:/etc/x-ui/
       - ./x-ui/cert/:/root/cert/
@@ -23,14 +34,3 @@ services:
     restart: unless-stopped
     profiles:
       - with_3x_ui
-
-  creds_changer:
-    build: .
-    env_file:
-      - .env
-    command: python creds_changer.py
-    profiles:
-      - with_3x_ui
-    depends_on:
-      3x-ui:
-        condition: service_started
