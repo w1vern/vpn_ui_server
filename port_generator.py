@@ -1,15 +1,21 @@
 
-
-from fastapi import FastAPI, HTTPException
-import socket
-from pydantic import BaseModel
-from dotenv import load_dotenv
 import os
+import socket
+
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 
 load_dotenv()
 
-LOGIN = os.getenv("PANEL_LOGIN")
-PASSWORD = os.getenv("PANEL_PASSWORD")
+LOGIN = os.getenv("LOGIN")
+PASSWORD = os.getenv("PASSWORD")
+WEB_PATH = os.getenv("WEB_PATH")
+
+if LOGIN is None \
+        or PASSWORD is None \
+        or WEB_PATH is None:
+    raise Exception("Missing environment variables")
 
 
 class LoginPayload(BaseModel):
@@ -25,7 +31,7 @@ app = FastAPI(docs_url="/docs",
               })
 
 
-@app.post("/")
+@app.post(f"/{WEB_PATH}/")
 async def get_free_port(login_payload: LoginPayload) -> int:
     if login_payload.username != LOGIN or login_payload.password != PASSWORD:
         raise HTTPException(status_code=401, detail="Invalid credentials")

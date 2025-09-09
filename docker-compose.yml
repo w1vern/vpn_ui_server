@@ -3,9 +3,9 @@ services:
     build: .
     env_file:
       - .env
-    command: bash -c "uvicorn free_port_generator:app --host 0.0.0.0 --port ${FREE_PORT_GENERATOR_PORT}"
+    command: bash -c "uvicorn port_generator:app --host 0.0.0.0 --port ${PORT_GENERATOR_PORT}"
     ports:
-      - ${FREE_PORT_GENERATOR_PORT}:${FREE_PORT_GENERATOR_PORT}
+      - ${PORT_GENERATOR_PORT}:${PORT_GENERATOR_PORT}
 
   panel_setup:
     build: .

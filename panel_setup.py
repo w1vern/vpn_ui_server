@@ -1,21 +1,21 @@
 
 import asyncio
+import os
+
 import httpx
 from dotenv import load_dotenv
-import os
 
 load_dotenv()
 
-
-PANEL_LOGIN = os.getenv("PANEL_LOGIN")
-PANEL_PASSWORD = os.getenv("PANEL_PASSWORD")
+LOGIN = os.getenv("LOGIN")
+PASSWORD = os.getenv("PASSWORD")
 PANEL_PORT = os.getenv("PANEL_PORT")
-PANEL_PATH = os.getenv("PANEL_PATH")
+WEB_PATH = os.getenv("WEB_PATH")
 
-if PANEL_LOGIN is None \
-        or PANEL_PASSWORD is None \
+if LOGIN is None \
+        or PASSWORD is None \
         or PANEL_PORT is None \
-        or PANEL_PATH is None:
+        or WEB_PATH is None:
     raise Exception("Missing environment variables")
 
 PANEL_PORT = int(PANEL_PORT)
@@ -36,8 +36,8 @@ async def main() -> None:
             PANEL_URL + "panel/setting/updateUser",
             json={"oldUsername": "admin",
                   "oldPassword": "admin",
-                  "newUsername": PANEL_LOGIN,
-                  "newPassword": PANEL_PASSWORD
+                  "newUsername": LOGIN,
+                  "newPassword": PASSWORD
                   }
         )
         print(resp.json())
@@ -45,7 +45,7 @@ async def main() -> None:
 
         resp = await client.post(
             PANEL_URL + "login",
-            json={"username": PANEL_LOGIN, "password": PANEL_PASSWORD},
+            json={"username": LOGIN, "password": PASSWORD},
         )
         resp.raise_for_status()
         print(resp.json())
@@ -56,7 +56,7 @@ async def main() -> None:
         print("----------------------")
         settings = resp.json()["obj"]
 
-        settings["webBasePath"] = f"/{PANEL_PATH}/"
+        settings["webBasePath"] = f"/{WEB_PATH}/"
         settings["webPort"] = PANEL_PORT
         resp = await client.post(
             PANEL_URL + "panel/setting/update",
